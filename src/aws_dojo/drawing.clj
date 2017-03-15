@@ -1,6 +1,7 @@
 (ns aws-dojo.drawing
   (:require [hiccup.core :as hiccup]
-            [clojure.spec :as s]))
+            [clojure.spec :as s]
+            [clojure.string :as string]))
 
 (defn concatv [& xs]
   (->> (apply concat xs)
@@ -12,8 +13,17 @@
 
 (s/def :drawing/command (s/keys :req-un [:command/command]))
 
+(s/def :drawing/name string?)
+(s/def :drawing/html string?)
+
+(s/def :drawing/drawing (s/keys :req [:drawing/name
+                                      :drawing/html]))
+
 (defn- create-command? [{:keys [command]}]
   (= "createDrawing" command))
+
+(defn- shape? [{:keys [command]}]
+  (string/starts-with? command "draw"))
 
 (defn- ->shape [{:keys [command] :as cmd}]
   (case command
@@ -34,13 +44,15 @@
                 :r radius
                 :fill color}])))
 
-(s/fdef ->hiccup
-        :args (s/cat :commands (s/coll-of :drawing/command))
-        :ret vector?)
+(defn- ->name [commands]
+  (->> commands
+       (filter #(= "renderDrawing" (:command %)))
+       first
+       :name))
 
-(defn ->hiccup [commands]
+(defn- ->hiccup [commands]
   (let [create (first (filter create-command? commands))
-        cmds (remove create-command? commands)]
+        cmds (filter shape? commands)]
     [:html
      [:head
       [:title (:title create)]]
@@ -53,9 +65,13 @@
                         :fill (:color create)}]]
                (map ->shape cmds))]]))
 
-(s/fdef render
-        :args (s/cat :hiccup vector?)
-        :ret string?)
+(defn render? [{:keys [command]}]
+  (= "renderDrawing" command))
 
-(defn render [hiccup]
-  (hiccup/html hiccup))
+(s/fdef render
+        :args (s/cat :commands (s/coll-of :drawing/command))
+        :ret :drawing/drawing)
+
+(defn render [commands]
+  {:drawing/name (->name commands)
+   :drawing/html (-> commands ->hiccup hiccup/html)})

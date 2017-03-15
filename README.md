@@ -99,6 +99,15 @@ You should see something like this, in which case your setup is complete and you
 }
 ```
 
+### Render the drawing
+
+```javascript
+{
+  "command": "renderDrawing",
+  "name": "hello-world"
+}
+```
+
 ## Resources
 
 * SQS
@@ -106,6 +115,7 @@ You should see something like this, in which case your setup is complete and you
   * [Javadoc](http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/sqs/AmazonSQSClient.html)
 * [Cheshire](https://github.com/dakrone/cheshire): JSON library
 * [Hiccup](https://github.com/weavejester/hiccup): HTML library
+* [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)
 * S3
   * [Amazonica API](https://github.com/mcohen01/amazonica#sqs)
   * [Javadoc](http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3Client.html)
