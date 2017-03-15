@@ -62,11 +62,57 @@ You should see something like this, in which case your setup is complete and you
 8. Get a signed URI for accessing your HTML file
 9. View your amazing drawing in your web browser
 
+## Drawing commands
+
+### Create a new drawing
+
+```javascript
+{
+  "command": "createDrawing",
+  "title": "Hello, world!",
+  "name": "hello-world",
+  "color": "#808080",
+  "width": 640,
+  "height": 480,
+  "shapes": 2
+}
+```
+
+### Draw a rectangle
+
+```javascript
+{
+  "command": "drawRectangle",
+  "color": "white",
+  "point": [20 40],
+  "width": 600,
+  "height": 400,
+}
+```
+
+### Draw a circle
+
+```javascript
+{
+  "command": "drawCircle",
+  "color": "red",
+  "center": [320 240],
+  "radius": 150,
+  "z": 1
+}
+```
+
 ## Resources
 
 * SQS
   * [Amazonica API](https://github.com/mcohen01/amazonica#sqs)
   * [Javadoc](http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/sqs/AmazonSQSClient.html)
+* [Cheshire](https://github.com/dakrone/cheshire): JSON library
+* [Hiccup](https://github.com/weavejester/hiccup): HTML library
+* [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)
+* S3
+  * [Amazonica API](https://github.com/mcohen01/amazonica#sqs)
+  * [Javadoc](http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3Client.html)
 
 ## License
 
