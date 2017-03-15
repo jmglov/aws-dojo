@@ -23,11 +23,13 @@
     (let [{:keys [:drawing/name :drawing/html]} (drawing/render commands)]
       (s3/put! bucket name html))))
 
-(defn run [queue-name bucket-name]
+(defn setup! [queue-name bucket-name]
   (authenticate!)
-  (let [queue (sqs/create-queue! queue-name)
-        bucket (s3/create-bucket! bucket-name)]
-    (while true
-      (when-let [url (create-drawing! queue bucket)]
-        (println url))
-      (Thread/sleep 100))))
+  [(sqs/create-queue! queue-name)
+   (s3/create-bucket! bucket-name)])
+
+(defn run [queue bucket]
+  (while true
+    (when-let [url (create-drawing! queue bucket)]
+      (println url))
+    (Thread/sleep 100)))
