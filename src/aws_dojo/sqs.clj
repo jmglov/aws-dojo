@@ -1,7 +1,6 @@
 (ns aws-dojo.sqs
   (:require [amazonica.aws.sqs :as sqs]
             [cheshire.core :as json]
-            [clojure.set :refer [rename-keys]]
             [clojure.spec :as s]))
 
 (s/def :sqs/name string?)
@@ -20,29 +19,17 @@
         :args (s/cat :name :sqs/queue-name)
         :ret :sqs/queue)
 
-(defn create-queue! [name]
-  (-> (sqs/create-queue name)
-      (assoc :sqs/name name)
-      (rename-keys {:queue-url :sqs/url})))
+(defn create-queue! [name])
 
 (s/fdef send-message
         :args (s/cat :queue :sqs/queue
                      :msg string?)
         :ret :sqs/message)
 
-(defn send-message [queue msg]
-  (when-let [{:keys [message-id]} (sqs/send-message (:sqs/url queue) msg)]
-    {:sqs/message-id message-id}))
+(defn send-message [queue msg])
 
 (s/fdef receive-message
         :args (s/cat :queue :sqs/queue)
         :ret (s/nilable :sqs/message))
 
-(defn receive-message [queue]
-  (when-let [message (-> (sqs/receive-message :queue-url (:sqs/url queue))
-                         :messages
-                         first)]
-    (sqs/delete-message {:queue-url (:sqs/url queue)
-                         :receipt-handle (:receipt-handle message)})
-    {:sqs/message-id (:message-id message)
-     :sqs/message-body (json/parse-string (:body message) true)}))
+(defn receive-message [queue])

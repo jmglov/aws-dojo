@@ -9,25 +9,5 @@
   (aws/defcredential
     (env :aws-access-key-id) (env :aws-secret-access-key) (env :aws-region)))
 
-(defn read-commands [queue]
-  (loop [commands []]
-    (if-let [{command :sqs/message-body} (sqs/receive-message queue)]
-      (let [commands (conj commands command)]
-        (if (drawing/render? commands)
-          commands
-          (recur commands)))
-      (recur commands))))
-
-(defn create-drawing! [queue bucket]
-  (when-let [commands (seq (read-commands queue))]
-    (let [{:keys [:drawing/name :drawing/html]} (drawing/render commands)]
-      (s3/put! bucket name html))))
-
 (defn run [queue-name bucket-name]
-  (authenticate!)
-  (let [queue (sqs/create-queue! queue-name)
-        bucket (s3/create-bucket! bucket-name)]
-    (while true
-      (when-let [url (create-drawing! queue bucket)]
-        (println url))
-      (Thread/sleep 100))))
+  (authenticate!))

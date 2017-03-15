@@ -16,7 +16,7 @@
         :args (s/cat :s string?)
         :ret :stream/stream)
 
-(defn ->stream [s]
+(defn- ->stream [s]
   (let [bs (.getBytes s)]
     {:stream/input (ByteArrayInputStream. bs)
      :stream/size (count bs)}))
@@ -25,7 +25,7 @@
         :args (s/cat)
         :ret nat-int?)
 
-(defn expiry-ts []
+(defn- expiry-ts []
   (-> (Instant/now)
       (.plusSeconds (* 3600 *url-expiry-hours*))
       (.toEpochMilli)))
@@ -39,8 +39,7 @@
         :args (s/cat :name :s3/name)
         :ret :s3/bucket)
 
-(defn create-bucket! [name]
-  (s3/create-bucket (str *bucket-prefix* name)))
+(defn create-bucket! [name])
 
 (s/fdef put!
         :args (s/cat :bucket :s3/bucket
@@ -48,14 +47,4 @@
                      :val string?)
         :ret :s3/url)
 
-(defn put! [bucket key val]
-  (let [stream (->stream val)]
-    (s3/put-object :bucket-name (:s3/name bucket)
-                   :key key
-                   :input-stream (:stream/input stream)
-                   :metadata {:content-type "text/html; charset=utf-8"
-                              :content-length (:stream/size stream)})
-    (str (s3/generate-presigned-url :bucket-name (:s3/name bucket)
-                                    :key key
-                                    :expiration (expiry-ts)
-                                    :method "GET"))))
+(defn put! [bucket key val])
