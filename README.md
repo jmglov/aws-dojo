@@ -84,7 +84,7 @@ You should see something like this, in which case your setup is complete and you
 {
   "command": "drawRectangle",
   "color": "white",
-  "point": [20 40],
+  "point": [20, 40],
   "width": 600,
   "height": 400,
 }
@@ -96,7 +96,7 @@ You should see something like this, in which case your setup is complete and you
 {
   "command": "drawCircle",
   "color": "red",
-  "center": [320 240],
+  "center": [320, 240],
   "radius": 150,
   "z": 1
 }
