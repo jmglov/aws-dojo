@@ -3,8 +3,7 @@
             [aws-dojo.drawing :as drawing]
             [aws-dojo.s3 :as s3]
             [aws-dojo.sqs :as sqs]
-            [environ.core :refer [env]])
-  (:import (java.time Instant)))
+            [environ.core :refer [env]]))
 
 (defn authenticate! []
   (aws/defcredential
@@ -12,24 +11,23 @@
 
 (defn read-commands [queue]
   (loop [commands []]
-    (if-let [command (sqs/receive-message queue)]
-      (recur (conj commands command))
-      commands)))
-
-(defn drawing-key []
-  (str "drawing-" (.toEpochMilli (Instant/now)) ".html"))
+    (if-let [{command :sqs/message-body} (sqs/receive-message queue)]
+      (let [commands (conj commands command)]
+        (if (drawing/render? command)
+          commands
+          (recur commands)))
+      (recur commands))))
 
 (defn create-drawing! [queue bucket]
   (when-let [commands (seq (read-commands queue))]
-    (->> commands
-         drawing/->hiccup
-         drawing/render
-         (s3/put! bucket (drawing-key)))))
+    (let [{:keys [:drawing/name :drawing/html]} (drawing/render commands)]
+      (s3/put! bucket name html))))
 
 (defn run [queue-name bucket-name]
   (authenticate!)
   (let [queue (sqs/create-queue! queue-name)
         bucket (s3/create-bucket! bucket-name)]
     (while true
-      (create-drawing! queue bucket)
+      (when-let [url (create-drawing! queue bucket)]
+        (println url))
       (Thread/sleep 100))))
