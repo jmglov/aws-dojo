@@ -22,7 +22,7 @@
 (defn- create-command? [{:keys [command]}]
   (= "createDrawing" command))
 
-(defn- shape? [{:keys [command]}]
+(defn- shape? [{:keys [command] :as cmd}]
   (string/starts-with? command "draw"))
 
 (defn- ->shape [{:keys [command] :as cmd}]
@@ -44,34 +44,35 @@
                 :r radius
                 :fill color}])))
 
-(defn- ->name [commands]
-  (->> commands
-       (filter #(= "renderDrawing" (:command %)))
-       first
-       :name))
+(defn- get-create
+  [commands]
+  (first (filter create-command? commands)))
 
 (defn- ->hiccup [commands]
-  (let [create (first (filter create-command? commands))
-        cmds (filter shape? commands)]
+  (let [{:keys [title width height color]} (get-create commands)
+        cmds (->> commands
+                  (filter shape?)
+                  (sort-by #(or (:z %) 0)))]
     [:html
      [:head
-      [:title (:title create)]]
+      [:title title]]
      [:body
-      (concatv [:svg {:width (:width create)
-                      :height (:height create)}
+      (concatv [:svg {:width width
+                      :height height}
                 [:rect {:style {:stroke-width 0}
                         :x 0, :y 0
-                        :width (:width create), :height (:height create)
-                        :fill (:color create)}]]
+                        :width width, :height height
+                        :fill color}]]
                (map ->shape cmds))]]))
 
-(defn render? [{:keys [command]}]
-  (= "renderDrawing" command))
+(defn render? [commands]
+  (= (:shapes (get-create commands))
+     (count (filter shape? commands))))
 
 (s/fdef render
         :args (s/cat :commands (s/coll-of :drawing/command))
         :ret :drawing/drawing)
 
 (defn render [commands]
-  {:drawing/name (->name commands)
+  {:drawing/name (:name (get-create commands))
    :drawing/html (-> commands ->hiccup hiccup/html)})

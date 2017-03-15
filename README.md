@@ -70,9 +70,11 @@ You should see something like this, in which case your setup is complete and you
 {
   "command": "createDrawing",
   "title": "Hello, world!",
+  "name": "hello-world",
   "color": "#808080",
   "width": 640,
-  "height": 480
+  "height": 480,
+  "shapes": 2
 }
 ```
 
@@ -84,7 +86,7 @@ You should see something like this, in which case your setup is complete and you
   "color": "white",
   "point": [20 40],
   "width": 600,
-  "height": 400
+  "height": 400,
 }
 ```
 
@@ -95,16 +97,8 @@ You should see something like this, in which case your setup is complete and you
   "command": "drawCircle",
   "color": "red",
   "center": [320 240],
-  "radius": 150
-}
-```
-
-### Render the drawing
-
-```javascript
-{
-  "command": "renderDrawing",
-  "name": "hello-world"
+  "radius": 150,
+  "z": 1
 }
 ```
 

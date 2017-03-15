@@ -13,7 +13,7 @@
   (loop [commands []]
     (if-let [{command :sqs/message-body} (sqs/receive-message queue)]
       (let [commands (conj commands command)]
-        (if (drawing/render? command)
+        (if (drawing/render? commands)
           commands
           (recur commands)))
       (recur commands))))
