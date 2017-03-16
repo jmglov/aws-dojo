@@ -39,10 +39,9 @@
         :ret (s/nilable :sqs/message))
 
 (defn receive-message [queue]
-  (when-let [message (-> (sqs/receive-message :queue-url (:sqs/url queue))
+  (when-let [message (-> (sqs/receive-message :queue-url (:sqs/url queue)
+                                              :delete true)
                          :messages
                          first)]
-    (sqs/delete-message {:queue-url (:sqs/url queue)
-                         :receipt-handle (:receipt-handle message)})
     {:sqs/message-id (:message-id message)
      :sqs/message-body (json/parse-string (:body message) true)}))
