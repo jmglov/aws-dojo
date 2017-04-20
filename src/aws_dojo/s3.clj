@@ -16,6 +16,15 @@
       (.plusSeconds (* 3600 *url-expiry-hours*))
       (.toEpochMilli)))
 
-(defn create-bucket! [name])
+(defn create-bucket! [name]
+  (s3/create-bucket name))
 
-(defn put! [bucket key val])
+(defn put! [bucket key val]
+  (let [stream (->stream val)] 
+    (s3/put-object :bucket-name bucket 
+                   :key key 
+                   :input-stream (:stream/input stream) 
+                   :metadata { :content-length (:stream/size stream),
+                               :content-type "text/html; charset=UTF-8"}))) 
+                             
+
